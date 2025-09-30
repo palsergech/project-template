@@ -104,7 +104,7 @@
       }
     ],
     "client": {
-      "web-client-main": [
+      "web-client": [
         {
           "id": "d62b9386-ba41-46ca-8332-d7f7b9e9d3a0",
           "name": "uma_protection",
@@ -483,18 +483,18 @@
     {
       "id": "87579fa1-93cc-432d-a4ab-254b5fb8eb4b",
       "createdTimestamp": 1749108559505,
-      "username": "service-account-web-client-main",
+      "username": "service-account-web-client",
       "enabled": true,
       "totp": false,
       "emailVerified": false,
-      "serviceAccountClientId": "web-client-main",
+      "serviceAccountClientId": "web-client",
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
         "default-roles-yagatalk"
       ],
       "clientRoles": {
-        "web-client-main": [
+        "web-client": [
           "uma_protection"
         ]
       },
@@ -807,7 +807,7 @@
     },
     {
       "id": "109e52f5-f9e2-4bff-8ec2-f13d317543a8",
-      "clientId": "web-client-main",
+      "clientId": "web-client",
       "name": "",
       "description": "",
       "rootUrl": "http://localhost:3000",
@@ -909,7 +909,7 @@
         "resources": [
           {
             "name": "Default Resource",
-            "type": "urn:web-client-main:resources:default",
+            "type": "urn:web-client:resources:default",
             "ownerManagedAccess": false,
             "attributes": {},
             "_id": "473efffa-e0fd-4cb4-8cd1-b9babaf3bab3",

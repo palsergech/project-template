@@ -1,0 +1,36 @@
+ingresses:
+  - className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    hosts:
+      - host: app.dev.zametki.online
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: 'app.dev.zametki.online-tls'
+        hosts:
+          - 'app.dev.zametki.online'
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 0.5Gi
+  requests:
+    cpu: 20m
+    memory: 0.2Gi
+
+extraEnvVars:
+  - name: NEXT_PUBLIC_URL
+    value: 'https://app.dev.zametki.online'
+  - name: BACKEND_URL
+    value: 'https://api.dev.zametki.online/bc/api'
+  - name: NEXTAUTH_URL
+    value: '$(NEXT_PUBLIC_URL)/api/auth'
+  - name: HOCUSPOCUS_URL
+    value: 'https://api.dev.zametki.online/hp'
+  - name: DEBUG
+    value: 'true'
+
+replicaCount: 1

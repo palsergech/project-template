@@ -1,0 +1,70 @@
+nameOverride: "client-app"
+
+image:
+  repository: '{{ requiredEnv "IMAGE_NAME" }}'
+  tag: '{{ requiredEnv "IMAGE_TAG" }}'
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+commonAnnotations:
+  helmwave.app/show-service-messages: "true"
+
+service:
+  containerPorts:
+    http: 3000
+
+metrics:
+  enabled: false
+
+migration:
+  enabled: false
+
+postgresql:
+  install: false
+
+envVars:
+  - name: KEYCLOAK_PUBLIC_URL
+    value: '{{ requiredEnv "KEYCLOAK_PUBLIC_URL" }}'
+  - name: KEYCLOAK_CLIENT_ID
+    value: '{{ requiredEnv "KEYCLOAK_CLIENT_ID" }}'
+  - name: KEYCLOAK_INTERNAL_URL
+    value: 'http://keycloak-{{ requiredEnv "ENV_NAME" }}:80/realms/notes'
+
+envSecretVars:
+  NEXTAUTH_SECRET: '{{ requiredEnv "NEXTAUTH_SECRET" }}'
+  KEYCLOAK_CLIENT_SECRET: '{{ requiredEnv "KEYCLOAK_CLIENT_SECRET" }}'
+  UPLOADTHING_SECRET: '{{ requiredEnv "UPLOADTHING_SECRET" }}'
+  OPENAI_KEY: '{{ requiredEnv "OPENAI_KEY" }}'
+  OPENAI_BASE_URL: '{{ requiredEnv "OPENAI_BASE_URL" }}'
+
+startupProbe:
+  httpGet:
+    path: /api/healthcheck
+    port: 3000
+    scheme: HTTP
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 5
+  successThreshold: 1
+  failureThreshold: 15
+
+livenessProbe:
+  httpGet:
+    path: /api/healthcheck
+    port: 3000
+    scheme: HTTP
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/healthcheck
+    port: 3000
+    scheme: HTTP
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 2

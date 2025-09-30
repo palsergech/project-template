@@ -1,0 +1,104 @@
+name: Deploy Client App
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    environment: stage
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./web-client
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.GITHUB_SHA_SHORT }}
+            ${{ env.IMAGE_NAME }}:${{ env.GITHUB_REF_SLUG }}
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+        env:
+          IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/client-app
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    concurrency:
+      group: ${{ github.event.inputs.environment }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: read
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - name: Set up BUILD_VERSION env variable
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == release/* ]]; then
+            VERSION=${GITHUB_REF_NAME#release/}
+            BUILD_VERSION="${VERSION}-${GITHUB_SHA_SHORT}"
+          else
+            BUILD_VERSION="${GITHUB_REF_NAME}-${GITHUB_SHA_SHORT}"
+          fi
+          echo "BUILD_VERSION=${BUILD_VERSION}" >> $GITHUB_ENV
+      - name: Install helmwave
+        uses: helmwave/setup-action@v0.3.0
+        with:
+          version: '0.41.1'
+      - uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Deploy helm charts
+        working-directory: ./devops/k8s/client-app
+        run: |
+          helmwave up --yml --build
+          helmwave status
+        env:
+          HELMWAVE_KUBEDOG_ENABLED: "true"
+          HELMWAVE_PROGRESS: "true"
+          HELMWAVE_DIFF_SHOW_SECRET: "false"
+          GH_REGISTRY_CONTAINER_READ: ${{ secrets.GH_REGISTRY_CONTAINER_READ }}
+          ENV_NAME: ${{ github.event.inputs.environment }}
+          K8S_NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+          IMAGE_NAME: ${{ env.REGISTRY}}/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/client-app
+          IMAGE_TAG: ${{ env.GITHUB_SHA_SHORT }}
+          KEYCLOAK_PUBLIC_URL: ${{ vars.KC_PUBLIC_URL }}
+          KEYCLOAK_CLIENT_ID: ${{ vars.CA_KC_CLIENT_ID }}
+          KEYCLOAK_CLIENT_SECRET: ${{ secrets.CA_KC_CLIENT_SECRET }}
+          NEXTAUTH_SECRET: ${{ secrets.CA_NEXTAUTH_SECRET }}
+          UPLOADTHING_SECRET: ${{ secrets.CA_UPLOADTHING_SECRET }}
+          OPENAI_KEY: ${{ secrets.CA_OPENAI_KEY }}
+          OPENAI_BASE_URL: ${{ vars.CA_OPENAI_BASE_URL }}
