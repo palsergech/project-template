@@ -10,7 +10,7 @@ import {Loader} from "@/components/common/loader";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Notes",
+  title: "Template",
   description: "Productivity Solution",
 };
 

@@ -1,7 +1,7 @@
 {
-  "name": "notes-web-client",
+  "name": "teamplate-web-client",
   "version": "1.0.0",
-  "description": "Notes web client",
+  "description": "Template web client",
   "packageManager": "pnpm@9.14.2",
   "scripts": {
     "dev": "next dev --turbopack",
@@ -60,7 +60,6 @@
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.10",
-    "uploadthing": "^7.7.2",
     "use-file-picker": "^2.1.2",
     "zod": "^3.25.36"
   },

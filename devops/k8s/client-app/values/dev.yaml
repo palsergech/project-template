@@ -4,14 +4,14 @@ ingresses:
       cert-manager.io/cluster-issuer: letsencrypt-prod
       nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     hosts:
-      - host: app.dev.zametki.online
+      - host: app.dev.tpl.palsergech.tech
         paths:
           - path: /
             pathType: Prefix
     tls:
-      - secretName: 'app.dev.zametki.online-tls'
+      - secretName: 'app.dev.tpl.palsergech.tech-tls'
         hosts:
-          - 'app.dev.zametki.online'
+          - 'app.dev.tpl.palsergech.tech'
 
 resources:
   limits:
@@ -23,13 +23,11 @@ resources:
 
 extraEnvVars:
   - name: NEXT_PUBLIC_URL
-    value: 'https://app.dev.zametki.online'
+    value: 'https://app.dev.tpl.palsergech.tech'
   - name: BACKEND_URL
-    value: 'https://api.dev.zametki.online/bc/api'
+    value: 'https://api.dev.tpl.palsergech.tech/bc'
   - name: NEXTAUTH_URL
     value: '$(NEXT_PUBLIC_URL)/api/auth'
-  - name: HOCUSPOCUS_URL
-    value: 'https://api.dev.zametki.online/hp'
   - name: DEBUG
     value: 'true'
 

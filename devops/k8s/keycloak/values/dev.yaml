@@ -2,7 +2,7 @@ ingress:
   enabled: true
   ingressClassName: nginx
   pathType: ImplementationSpecific
-  hostname: auth.dev.zametki.online
+  hostname: auth.dev.tpl.palsergech.tech
   path: /
   servicePort: http
   annotations:
@@ -19,8 +19,8 @@ replicaCount: 1
 
 resources:
   limits:
+    cpu: 2000m
     memory: 3Gi
-    cpu: 2000m
   requests:
-    cpu: 2000m
+    cpu: 1000m
     memory: 2Gi
