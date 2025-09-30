@@ -1,0 +1,6 @@
+target/**
+devops/
+!devops/docker/
+docker-compose.yml
+.git*
+*.md

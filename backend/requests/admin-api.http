@@ -1,0 +1,6 @@
+### health
+GET {{backend-url}}/api/admin/users/search?emails=paulpaulych@gmail.com,pasha21215@gmail.com
+x-api-key: {{admin-api-key}}
+
+
+

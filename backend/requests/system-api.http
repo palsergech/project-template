@@ -1,0 +1,17 @@
+### health
+GET {{backend-url}}/api/system/health
+### liveness probe
+GET {{backend-url}}/system/health/liveness
+### readiness probe
+GET {{backend-url}}/system/health/readiness
+### prometheus metrica
+GET {{backend-url}}/system/prometheus
+### system info
+GET {{backend-url}}/system/info
+### open-api docs
+GET {{backend-url}}/system/docs
+### Swagger UI
+GET {{backend-url}}/system/swagger-ui
+### Swagger UI
+GET {{backend-url}}/openapi.yaml
+

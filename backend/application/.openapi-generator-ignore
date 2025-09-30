@@ -1,0 +1,8 @@
+# OpenAPI Generator Ignore
+**/SpringDocConfiguration.kt
+**/.openapi-generator-ignore
+**/build.gradle.kts
+**/pom.xml
+**/README.md
+**/settings.gradle
+**/Exceptions.kt
