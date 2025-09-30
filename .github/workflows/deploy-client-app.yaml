@@ -99,6 +99,3 @@ jobs:
           KEYCLOAK_CLIENT_ID: ${{ vars.CA_KC_CLIENT_ID }}
           KEYCLOAK_CLIENT_SECRET: ${{ secrets.CA_KC_CLIENT_SECRET }}
           NEXTAUTH_SECRET: ${{ secrets.CA_NEXTAUTH_SECRET }}
-          UPLOADTHING_SECRET: ${{ secrets.CA_UPLOADTHING_SECRET }}
-          OPENAI_KEY: ${{ secrets.CA_OPENAI_KEY }}
-          OPENAI_BASE_URL: ${{ vars.CA_OPENAI_BASE_URL }}

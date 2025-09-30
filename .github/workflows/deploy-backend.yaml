@@ -103,7 +103,7 @@ jobs:
           GH_REGISTRY_CONTAINER_READ: ${{ secrets.GH_REGISTRY_CONTAINER_READ }}
           ALLOWED_ORIGINS: ${{ vars.BC_ALLOWED_ORIGINS }}
           KC_PUBLIC_URL: ${{ vars.KC_PUBLIC_URL }}
-          KC_USERS_REALM: ${{ vars.KC_USERS_REALM }}
-          KC_API_CLIENT_ID: ${{ vars.BC_KC_API_CLIENT_ID }}
-          KC_API_USERNAME: ${{ vars.BC_KC_API_USERNAME }}
-          KC_API_PASSWORD: ${{ secrets.BC_KC_API_PASSWORD }}
+#          KC_USERS_REALM: ${{ vars.KC_USERS_REALM }}
+#          KC_API_CLIENT_ID: ${{ vars.BC_KC_API_CLIENT_ID }}
+#          KC_API_USERNAME: ${{ vars.BC_KC_API_USERNAME }}
+#          KC_API_PASSWORD: ${{ secrets.BC_KC_API_PASSWORD }}
