@@ -1,0 +1,192 @@
+{{- define "generic-service.deployment" }}
+{{- $fullName := include "msvc.fullname" .context }}
+{{- $compName := "api" }}
+{{- $values := .context.Values }}
+{{- $serviceIndex := .serviceIndex }}
+{{- if $serviceIndex }}
+{{- $fullName = include "msvc.fullname" (deepCopy .context | merge (dict "serviceIndex" $serviceIndex)) }}
+{{- $compName = printf "%s%d" "api" $serviceIndex }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: {{ .context.Values.kind }}
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "msvc.labels" .context | nindent 4 }}
+    app.kubernetes.io/component: {{ $compName }}
+    {{- if .context.Values.commonLabels }}
+      {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.commonLabels "context" .context ) | nindent 4 }}
+    {{- end }}
+  {{- if .context.Values.commonAnnotations }}
+  annotations: {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.commonAnnotations "context" .context ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .context.Values.replicaCount }}
+  {{- with .context.Values.updateStrategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "msvc.selectorLabels" .context | nindent 6 }}
+      app.kubernetes.io/component: {{ $compName }}
+  template:
+    metadata:
+      {{- $envSecret := merge (.context.Values.envSecretVars | default (dict)) (.context.Values.extraEnvSecretVars | default (dict)) -}}
+      {{- if or $envSecret .context.Values.podAnnotations }}
+      annotations:
+        {{- if $envSecret }}
+        checksum/secret: {{ include (print .context.Template.BasePath "/secret.yaml") .context | sha256sum }}
+        {{- end }}
+        {{- with .context.Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      labels:
+        {{- include "msvc.selectorLabels" .context | nindent 8 }}
+        app.kubernetes.io/component: {{ $compName }}
+        {{- if .context.Values.commonLabels }}
+          {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.commonLabels "context" .context ) | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .context.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "msvc.serviceAccountName" .context }}
+      securityContext:
+        {{- toYaml .context.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: service
+          securityContext:
+            {{- toYaml .context.Values.securityContext | nindent 12 }}
+          image: "{{ .context.Values.image.repository }}:{{ .context.Values.image.tag | default .context.Chart.AppVersion }}"
+          imagePullPolicy: {{ .context.Values.image.pullPolicy }}
+          {{- with .context.Values.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .context.Values.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- $secretName := include "msvc.fullname" .context }}
+          {{- if $serviceIndex }}
+          env: {{- include "msvc.env" (dict "Values" $values "secretName" $secretName "serviceIndex" $serviceIndex) | nindent 12 }}
+          {{- else }}
+          env: {{- include "msvc.env" (dict "Values" $values "secretName" $secretName) | nindent 12 }}
+          {{- end }}
+          {{- if .context.Values.service.containerPorts }}
+          ports:
+            {{- range $name, $containerPort := .context.Values.service.containerPorts }}
+            - name: {{ $name }}
+              containerPort: {{ $containerPort }}
+              protocol: TCP
+            {{- end }}
+          {{- end }}
+          {{- with .context.Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .context.Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .context.Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .context.Values.lifecycle }}
+          lifecycle:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .context.Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp
+            {{- with .context.Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- range .context.Values.sidecars }}
+        - name: {{ .name }}
+          {{- with .securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: {{ .image | quote }}
+          imagePullPolicy: {{ .imagePullPolicy | default "IfNotPresent" }}
+          {{- with .command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if $serviceIndex }}
+          env: {{- include "msvc.env" (dict "Values" $values "secretName" $secretName "serviceIndex" $serviceIndex) | nindent 12 }}
+          {{- else }}
+          env: {{- include "msvc.env" (dict "Values" $values "secretName" $secretName) | nindent 12 }}
+          {{- end }}
+          {{- with .ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .lifecycle }}
+          lifecycle:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        {{- with .context.Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .context.Values.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .context.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .context.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end}}
+
+{{- if .Values.service.enabled }}
+  {{- if .Values.service.multiple.enabled }}
+    {{- range $i := until (.Values.service.multiple.count | int) }}
+      {{- include "generic-service.deployment" (dict "context" $ "serviceIndex" (add $i 1)) }}
+    {{- end }}
+  {{- else }}
+  {{- include "generic-service.deployment" (dict "context" $) }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,48 @@
+{{- define "generic-service.service" }}
+{{- $fullName := include "msvc.fullname" .context }}
+{{- $compName := "api" }}
+{{- if .serviceIndex }}
+{{- $fullName = include "msvc.fullname" (deepCopy .context | merge (dict "serviceIndex" .serviceIndex)) }}
+{{- $compName = printf "%s%d" "api" .serviceIndex }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "msvc.labels" .context | nindent 4 }}
+    app.kubernetes.io/component: {{ $compName }}
+    {{- if .context.Values.commonLabels }}
+      {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.commonLabels "context" .context ) | nindent 4 }}
+    {{- end }}
+  annotations:
+  {{- if .context.Values.commonAnnotations }}
+    {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.commonAnnotations "context" .context ) | nindent 4 }}
+  {{- end }}
+  {{- if .context.Values.service.annotations }}
+    {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.service.annotations "context" .context ) | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .context.Values.service.type }}
+  ports:
+    {{- range $name, $port := .context.Values.service.ports }}
+    - name: {{ $name }}
+      port: {{ $port }}
+      targetPort: {{ $name }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    {{- include "msvc.selectorLabels" .context | nindent 4 }}
+    app.kubernetes.io/component: {{ $compName }}
+{{- end }}
+
+{{- if .Values.service.enabled }}
+  {{- if .Values.service.multiple.enabled }}
+    {{- range $i := until (.Values.service.multiple.count | int) }}
+      {{- include "generic-service.service" (dict "context" $ "serviceIndex" (add $i 1)) }}
+    {{- end }}
+  {{- else }}
+  {{- include "generic-service.service" (dict "context" $) }}
+  {{- end }}
+{{- end }}

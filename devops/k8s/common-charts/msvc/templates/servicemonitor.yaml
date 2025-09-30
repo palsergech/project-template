@@ -1,0 +1,72 @@
+{{- define "generic-service.servicemonitor" }}
+{{- $fullName := include "msvc.fullname" .context }}
+{{- $compName := "api" }}
+{{- if .serviceIndex }}
+{{- $fullName = include "msvc.fullname" (deepCopy .context | merge (dict "serviceIndex" .serviceIndex)) }}
+{{- $compName = printf "%s%d" "api" .serviceIndex }}
+{{- end }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ $fullName }}
+  {{- with .context.Values.metrics.serviceMonitor.namespace }}
+  namespace: {{ . | quote }}
+  {{- end }}
+  labels:
+    {{- include "msvc.labels" .context | nindent 4 }}
+    {{- if .context.Values.commonLabels }}
+      {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.commonLabels "context" .context ) | nindent 4 }}
+    {{- end }}
+    {{- with .context.Values.metrics.serviceMonitor.additionalLabels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- if .context.Values.commonAnnotations }}
+  annotations:
+    {{- include "msvc.tplvalues.render" ( dict "value" .context.Values.commonAnnotations "context" .context ) | nindent 4 }}
+  {{- end }}
+spec:
+  endpoints:
+    - port: {{ .context.Values.metrics.portName }}
+      path: {{ .context.Values.metrics.path }}
+      interval: {{ .context.Values.metrics.serviceMonitor.scrapeInterval }}
+      {{- if .context.Values.metrics.serviceMonitor.honorLabels }}
+      honorLabels: true
+      {{- end }}
+      {{- with .context.Values.metrics.serviceMonitor.relabelings }}
+      relabelings: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .context.Values.metrics.serviceMonitor.metricRelabelings }}
+      metricRelabelings: {{ toYaml . | nindent 8 }}
+      {{- end }}
+  {{- with .context.Values.metrics.serviceMonitor.jobLabel }}
+  jobLabel: {{ . | quote }}
+  {{- end }}
+  {{- with .context.Values.metrics.serviceMonitor.namespaceSelector }}
+  namespaceSelector: {{ toYaml . | nindent 4 }}
+  {{- else }}
+  namespaceSelector:
+    matchNames:
+      - {{ .context.Release.Namespace }}
+  {{- end }}
+  {{- if .context.Values.metrics.serviceMonitor.targetLabels }}
+  targetLabels:
+    {{- range .context.Values.metrics.serviceMonitor.targetLabels }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "msvc.selectorLabels" .context | nindent 6 }}
+      app.kubernetes.io/component: {{ $compName }}
+{{- end }}
+
+{{- if and .Values.service.enabled .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+  {{- if .Values.service.multiple.enabled }}
+    {{- range $i := until (.Values.service.multiple.count | int) }}
+      {{- include "generic-service.servicemonitor" (dict "context" $ "serviceIndex" (add $i 1)) }}
+    {{- end }}
+  {{- else }}
+  {{- include "generic-service.servicemonitor" (dict "context" $) }}
+  {{- end }}
+{{- end }}
