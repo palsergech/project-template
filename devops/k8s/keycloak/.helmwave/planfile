@@ -1,0 +1,57 @@
+project: ""
+version: 0.42.1
+monitors: []
+repositories: []
+registries:
+    - host: registry-1.docker.io
+      username: ""
+      password: ""
+      insecure: false
+releases:
+    - chart:
+        name: .helmwave/charts/keycloak-dev@notes-dev/keycloak-21.8.0.tgz
+        ca_file: ""
+        cert_file: ""
+        key_file: ""
+        keyring: ""
+        repo_url: ""
+        username: ""
+        password: ""
+        version: 21.8.0
+        insecure: false
+        verify: false
+        pass_credentials: false
+        plain_http: false
+        skip_dependency_update: false
+      pending_release_strategy: rollback
+      name: keycloak-dev
+      namespace: notes-dev
+      values:
+        - src: ./values/_common.yaml
+          dst: .helmwave/values/keycloak-dev@notes-dev/370144e27c4f89332f1bd4a6eed03388.yml
+          delimiter_left: '[['
+          delimiter_right: ']]'
+          renderer: sprig
+          strict: false
+        - src: ./values/dev.yaml
+          dst: .helmwave/values/keycloak-dev@notes-dev/8bc6b2f6e6faad29687635d023d50dd4.yml
+          delimiter_left: '[['
+          delimiter_right: ']]'
+          renderer: sprig
+          strict: false
+      tags:
+        - keycloak-dev@notes-dev
+      timeout: 5m0s
+      max_history: 10
+      atomic: true
+      wait: true
+      wait_for_jobs: true
+lifecycle:
+    pre_build: []
+    post_build: []
+    pre_up: []
+    post_up: []
+    pre_rollback: []
+    post_rollback: []
+    pre_down: []
+    post_down: []

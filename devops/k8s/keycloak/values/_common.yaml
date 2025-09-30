@@ -1,0 +1,20 @@
+containerSecurityContext:
+  readOnlyRootFilesystem: false
+
+production: true
+
+proxy: edge
+
+auth:
+  adminUser: '[[ requiredEnv "KC_ADMIN_USER" ]]'
+  adminPassword: '[[ requiredEnv "KC_ADMIN_PASSWORD" ]]'
+
+postgresql:
+  enabled: false
+
+externalDatabase:
+  host: '[[ requiredEnv "KC_DB_HOST" ]]'
+  port: '[[ requiredEnv "KC_DB_PORT" ]]'
+  user: '[[ requiredEnv "KC_DB_USER" ]]'
+  database: '[[ requiredEnv "KC_DB_NAME" ]]'
+  password: '[[ requiredEnv "KC_DB_PASS" ]]'

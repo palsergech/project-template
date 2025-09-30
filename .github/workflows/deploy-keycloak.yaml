@@ -1,0 +1,56 @@
+name: Deploy Keycloak
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'dev'
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+
+  deploy-keycloak:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.event.inputs.environment }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: read
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - name: Install helmwave
+        uses: helmwave/setup-action@v0.3.0
+        with:
+          version: '0.41.1'
+      - uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Deploy helm charts
+        working-directory: ./devops/k8s/keycloak
+        run: |
+          helmwave up --yml --build
+          helmwave status
+        env:
+          HELMWAVE_KUBEDOG_ENABLED: "true"
+          HELMWAVE_PROGRESS: "true"
+          HELMWAVE_DIFF_SHOW_SECRET: "false"
+          ENV_NAME: ${{ github.event.inputs.environment }}
+          K8S_NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+          KC_DB_HOST: ${{ vars.KC_DB_HOST }}
+          KC_DB_PORT: ${{ vars.KC_DB_PORT }}
+          KC_DB_NAME: ${{ vars.KC_DB_NAME }}
+          KC_DB_USER: ${{ vars.KC_DB_USER }}
+          KC_DB_PASS: ${{ secrets.KC_DB_PASS }}
+          KC_ADMIN_USER: ${{ vars.KC_ADMIN_USER }}
+          KC_ADMIN_PASSWORD: ${{ secrets.KC_ADMIN_PASSWORD }}
