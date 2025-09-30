@@ -1,0 +1,93 @@
+nameOverride: "backend"
+
+image:
+  repository: '{{ requiredEnv "IMAGE_NAME" }}'
+  tag: '{{ requiredEnv "IMAGE_TAG" }}'
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+commonAnnotations:
+  helmwave.app/show-service-messages: "true"
+
+service:
+  containerPorts:
+    http: 8080
+
+metrics:
+  enabled: true
+  portName: http
+  path: /api/system/prometheus
+  serviceMonitor:
+    enabled: true
+
+migration:
+  enabled: false
+
+postgresql:
+  install: false
+
+envVars:
+  - name: PORT
+    value: '8080'
+  - name: ALLOWED_ORIGINS
+    value: '{{ requiredEnv "ALLOWED_ORIGINS" }}'
+  - name: DB_HOST
+    value: '{{ requiredEnv "DB_HOST" }}'
+  - name: DB_PORT
+    value: '{{ requiredEnv "DB_PORT" }}'
+  - name: DB_NAME
+    value: '{{ requiredEnv "DB_NAME" }}'
+  - name: DB_USER
+    value: '{{ requiredEnv "DB_USER" }}'
+  - name: BUILD_VERSION
+    value: '{{ requiredEnv "BUILD_VERSION" }}'
+  - name: KC_PUBLIC_URL
+    value: '{{ requiredEnv "KC_PUBLIC_URL" }}'
+  - name: KC_API_URL
+    value: 'http://keycloak-{{ requiredEnv "ENV_NAME" }}'
+  - name: KC_ADMIN_REALM
+    value: 'master'
+  - name: KC_USERS_REALM
+    value: '{{ requiredEnv "KC_USERS_REALM" }}'
+  - name: KC_API_USERNAME
+    value: '{{ requiredEnv "KC_API_USERNAME" }}'
+  - name: KC_API_PASSWORD
+    value: '{{ requiredEnv "KC_API_PASSWORD" }}'
+  - name: KC_API_CLIENT_ID
+    value: '{{ requiredEnv "KC_API_CLIENT_ID" }}'
+
+envSecretVars:
+  API_KEY: '{{ requiredEnv "API_KEY" }}'
+  DB_PASS: '{{ requiredEnv "DB_PASS" }}'
+
+startupProbe:
+  httpGet:
+    path: /api/system/health/liveness
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 5
+  successThreshold: 1
+  failureThreshold: 15
+
+livenessProbe:
+  httpGet:
+    path: /api/system/health/liveness
+    port: 8080
+    scheme: HTTP
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/system/health/readiness
+    port: 8080
+    scheme: HTTP
+  timeoutSeconds: 5
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 2

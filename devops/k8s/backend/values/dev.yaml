@@ -1,0 +1,22 @@
+ingresses:
+  - className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: api.dev.zametki.online
+        paths:
+          - path: /bc(/|$)(.*)
+            pathType: Prefix
+    tls:
+      - secretName: 'api.dev.zametki.online-tls'
+        hosts:
+          - 'api.dev.zametki.online'
+
+resources:
+  limits:
+    cpu: 2
+    memory: 2Gi
+  requests:
+    cpu: 1
+    memory: 1Gi
