@@ -29,7 +29,7 @@ envVars:
   - name: KEYCLOAK_CLIENT_ID
     value: '{{ requiredEnv "KEYCLOAK_CLIENT_ID" }}'
   - name: KEYCLOAK_INTERNAL_URL
-    value: 'http://keycloak-{{ requiredEnv "ENV_NAME" }}:80/realms/template'
+    value: 'http://keycloak-{{ requiredEnv "ENV_NAME" }}:8080/realms/template'
 
 envSecretVars:
   NEXTAUTH_SECRET: '{{ requiredEnv "NEXTAUTH_SECRET" }}'
