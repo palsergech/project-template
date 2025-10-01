@@ -5,13 +5,13 @@ server:
 
 keycloak:
   public-url: ${KC_PUBLIC_URL:http://localhost:9090/realms/template}
-  admin:
-    url: ${KC_API_URL:http://localhost:9090}
-    userRealm: ${KC_USERS_REALM:template}
-    adminRealm: ${KC_ADMIN_REALM:master}
-    username: ${KC_API_USERNAME:backend}
-    password: ${KC_API_PASSWORD:password}
-    client-id: ${KC_API_CLIENT_ID:admin-cli}
+#  admin:
+#    url: ${KC_API_URL:http://localhost:9090}
+#    userRealm: ${KC_USERS_REALM:template}
+#    adminRealm: ${KC_ADMIN_REALM:master}
+#    username: ${KC_API_USERNAME:backend}
+#    password: ${KC_API_PASSWORD:password}
+#    client-id: ${KC_API_CLIENT_ID:admin-cli}
 
 logging:
   level:
