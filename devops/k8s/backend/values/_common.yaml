@@ -44,18 +44,6 @@ envVars:
     value: '{{ requiredEnv "BUILD_VERSION" }}'
   - name: KC_PUBLIC_URL
     value: '{{ requiredEnv "KC_PUBLIC_URL" }}'
-#  - name: KC_API_URL
-#    value: 'http://keycloak-{{ requiredEnv "ENV_NAME" }}'
-#  - name: KC_ADMIN_REALM
-#    value: 'master'
-#  - name: KC_USERS_REALM
-#    value: '{{ requiredEnv "KC_USERS_REALM" }}'
-#  - name: KC_API_USERNAME
-#    value: '{{ requiredEnv "KC_API_USERNAME" }}'
-#  - name: KC_API_PASSWORD
-#    value: '{{ requiredEnv "KC_API_PASSWORD" }}'
-#  - name: KC_API_CLIENT_ID
-#    value: '{{ requiredEnv "KC_API_CLIENT_ID" }}'
 
 envSecretVars:
   API_KEY: '{{ requiredEnv "API_KEY" }}'
