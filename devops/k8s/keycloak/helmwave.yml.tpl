@@ -19,7 +19,7 @@ releases:
     namespace: {{ $namespace }}
     chart:
       name: oci://registry-1.docker.io/bitnamicharts/keycloak
-      version: 25.2.3
+      version: 25.2.0
     values:
       - src: ./values/_common.yaml
         renderer: sprig

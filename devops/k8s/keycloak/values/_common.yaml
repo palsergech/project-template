@@ -1,9 +1,16 @@
+image:
+  repository: bitnamilegacy/keycloak
+  tag: 26.3.3-debian-12-r0
+
 containerSecurityContext:
   readOnlyRootFilesystem: false
 
 production: true
 
 proxy: edge
+
+tls:
+  enabled: true
 
 auth:
   adminUser: '[[ requiredEnv "KC_ADMIN_USER" ]]'
