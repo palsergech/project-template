@@ -7,7 +7,6 @@ import { TokenProvider } from "@/api/TokenProvider"
 import { ClientConfigProvider } from "@/config/ConfigProvider"
 import { ClientConfig } from "@/config/config"
 import { getClientConfig } from "@/config/getClientConfigAction"
-import {useIsMobile} from "@/hooks/use-is-mobile";
 
 export default function ProtectedLayout({
   children,
@@ -16,7 +15,6 @@ export default function ProtectedLayout({
 }) {
   const { isLoading: userLoading, user } = useUser()
   const [config, setConfig] = useState<ClientConfig | null>(null)
-  const isMobile = useIsMobile()
 
   useEffect(() => {
     getClientConfig()

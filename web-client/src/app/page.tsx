@@ -13,7 +13,7 @@ export default function HomePage() {
     if (status === "authenticated") {
       router.push("/greeting")
     }
-  }, [status])
+  }, [status, router])
 
   return (
     <Loader/>
