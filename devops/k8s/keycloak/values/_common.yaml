@@ -9,8 +9,7 @@ production: true
 
 proxy: edge
 
-tls:
-  enabled: true
+proxyHeaders: forwarded
 
 auth:
   adminUser: '[[ requiredEnv "KC_ADMIN_USER" ]]'
