@@ -1,8 +1,8 @@
-version: '3.8'
 services:
 
   postgres:
     image: docker.io/postgres:15-alpine
+    container_name: postgres
     ports:
       - "5432:5432"
     healthcheck:
@@ -17,6 +17,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.3
+    container_name: keycloak
     ports:
       - "9090:8080"
     environment:
@@ -27,6 +28,48 @@ services:
     command:
       - 'start-dev --import-realm --health-enabled=true'
 
+  kafka:
+    image: 'bitnamilegacy/kafka:4.0.0'
+    container_name: kafka
+    environment:
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: 'broker, controller'
+      KAFKA_CLIENT_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: 'BROKER'
+      KAFKA_CFG_LISTENERS: 'BROKER://:9092,CONTROLLER://:9093,INTERNAL://:9094'
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT'
+      KAFKA_CFG_ADVERTISED_LISTENERS: 'BROKER://kafka:9092'
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: '0@kafka:9093'
+    volumes:
+      - ./kafka-data:/bitnami/kafka
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka:9092 || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    networks:
+      - app-network
+      - inner-cluster-communication
+
+  kafka-ui:
+    image: 'kafbat/kafka-ui:latest'
+    container_name: kafka-ui
+    networks:
+      - inner-cluster-communication
+      - app-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - '10001:8080'
+    environment:
+      KAFKA_CLUSTERS_0_NAME: 'local'
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9094'
+      DYNAMIC_CONFIG_ENABLED: 'true'
+
 networks:
   app-network:
     driver: bridge
+  inner-cluster-communication:
