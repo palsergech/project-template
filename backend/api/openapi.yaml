@@ -105,6 +105,148 @@ components:
           type: object
           additionalProperties: true
 
+    UserProfileDTO:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "8f14e45f-ea9d-4e1a-9f5a-1f3c2b7c9a10"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        name:
+          type: string
+          example: "Jane Doe"
+
+    UpdateUserProfileReqDTO:
+      description: Full update payload for user profile
+      type: object
+      required:
+        - email
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+
+    PatchUserProfileReqDTO:
+      description: Partial update payload for user profile
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+      minProperties: 1
+
+    NoteDTO:
+      type: object
+      required:
+        - id
+        - userId
+        - title
+        - content
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+        userId:
+          type: string
+          format: uuid
+          example: "8f14e45f-ea9d-4e1a-9f5a-1f3c2b7c9a10"
+        title:
+          type: string
+          example: "Shopping list"
+        content:
+          type: string
+          example: "- Milk\n- Bread\n- Eggs"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-15T10:15:30Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-10-15T11:00:00Z"
+
+    CreateNoteReqDTO:
+      type: object
+      required:
+        - userId
+        - title
+        - content
+      properties:
+        userId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+
+    UpdateNoteReqDTO:
+      description: Full update payload for a note
+      type: object
+      required:
+        - userId
+        - title
+        - content
+      properties:
+        userId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+
+    PatchNoteReqDTO:
+      description: Partial update payload for a note
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+      minProperties: 1
+
+    PageOfNotesDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteDTO'
+        page:
+          type: integer
+          minimum: 0
+          example: 0
+        size:
+          type: integer
+          minimum: 1
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          example: 123
+        totalPages:
+          type: integer
+          minimum: 0
+          example: 7
+
   responses:
     ServerError:
       description: Internal server error
@@ -162,5 +304,209 @@ paths:
             application/json:
               schema:
                 type: string
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+  /profile:
+    get:
+      operationId: getUserProfile
+      tags: [UserProfile]
+      summary: Get current user's profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileDTO'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      operationId: updateUserProfile
+      tags: [UserProfile]
+      summary: Replace current user's profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileReqDTO'
+      responses:
+        '200':
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileDTO'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      operationId: patchUserProfile
+      tags: [UserProfile]
+      summary: Partially update current user's profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUserProfileReqDTO'
+      responses:
+        '200':
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileDTO'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+  /notes:
+    get:
+      operationId: listNotes
+      tags: [Notes]
+      summary: List notes with pagination
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Page number starting at 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 20
+          description: Page size
+        - in: query
+          name: sort
+          schema:
+            type: string
+            example: updatedAt,DESC
+          description: Sort by field and direction
+      responses:
+        '200':
+          description: Paged list of notes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfNotesDTO'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      operationId: createNote
+      tags: [Notes]
+      summary: Create a new note
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNoteReqDTO'
+      responses:
+        '201':
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteDTO'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+  /notes/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getNoteById
+      tags: [Notes]
+      summary: Get note by id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteDTO'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      operationId: updateNote
+      tags: [Notes]
+      summary: Replace a note
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNoteReqDTO'
+      responses:
+        '200':
+          description: Updated note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteDTO'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      operationId: patchNote
+      tags: [Notes]
+      summary: Partially update a note
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchNoteReqDTO'
+      responses:
+        '200':
+          description: Updated note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteDTO'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      operationId: deleteNote
+      tags: [Notes]
+      summary: Delete a note
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Note deleted
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         default:
           $ref: '#/components/responses/DefaultError'

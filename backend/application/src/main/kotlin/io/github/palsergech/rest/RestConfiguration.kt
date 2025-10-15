@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Import
 @Configuration
 @Import(
     GreetingController::class,
+    UserProfileController::class,
+
     ApiExceptionHandler::class,
 )
 internal class RestConfiguration

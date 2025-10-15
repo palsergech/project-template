@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.scheduling.annotation.EnableScheduling
 import io.github.palsergech.security.SecurityConfiguration
-import io.github.palsergech.module1.Module1Configuration
+import io.github.palsergech.userprofile.UserProfileModuleConfiguration
 import io.github.palsergech.lib.spring.json.DefaultJsonMapperConfiguration
 import io.github.palsergech.lib.spring.scheduling.SchedulingConfiguration
 import io.github.palsergech.lib.spring.transaction.DefaultBlockingTransactionService
@@ -28,6 +28,6 @@ import io.github.palsergech.rest.RestConfiguration
     SchedulingConfiguration::class,
 
     // modules
-    Module1Configuration::class
+    UserProfileModuleConfiguration::class
 )
 class ApplicationConfiguration

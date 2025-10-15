@@ -19,7 +19,8 @@ dependencies {
     implementation(Libs.spring_security_oauth2_jose)
     implementation(Libs.spring_security_oauth2_resource_server)
 
-    implementation(project(":modules:module1"))
+    implementation(project(":modules:user-profile"))
+    implementation(project(":modules:notes"))
 
     testImplementation(project(":db-migration"))
     testImplementation(project(":libs:spring-test"))
