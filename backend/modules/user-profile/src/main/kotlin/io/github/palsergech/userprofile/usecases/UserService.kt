@@ -52,6 +52,14 @@ class UserService internal constructor(
             }
         val updated = user.update(name = name, email = email)
         repository.save(updated.toRow())
+
+        val event = UserProfileUpdatedEvent(
+            id = updated.id.value,
+            name = updated.name,
+            email = updated.email
+        )
+        kafkaTemplate.send("user-events", event.id.toString(), event)
+
         return updated
     }
 
