@@ -42,6 +42,7 @@ object Libs {
     // Spring
     const val spring_core = "org.springframework:spring-core"
     const val spring_context = "org.springframework:spring-context"
+    const val spring_kafka = "org.springframework.kafka:spring-kafka"
     const val spring_boot_dev_tools = "org.springframework.boot:spring-boot-devtools"
     const val spring_boot = "org.springframework.boot:spring-boot"
     const val spring_boot_starter_web = "org.springframework.boot:spring-boot-starter-web"

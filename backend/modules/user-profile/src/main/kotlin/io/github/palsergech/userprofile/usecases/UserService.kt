@@ -1,14 +1,18 @@
 package io.github.palsergech.userprofile.usecases
 
 import io.github.palsergech.lib.platform.domain.Id
+import io.github.palsergech.lib.platform.domainevents.DomainEvent
 import io.github.palsergech.userprofile.domain.UserProfile
 import io.github.palsergech.userprofile.domain.UserProfilePatch
+import io.github.palsergech.userprofile.domain.events.UserProfileUpdatedEvent
 import io.github.palsergech.userprofile.impl.persistence.jdbc.UserProfileJdbcRepository
 import io.github.palsergech.userprofile.impl.persistence.jdbc.UserProfileRow
+import org.springframework.kafka.core.KafkaTemplate
 import kotlin.jvm.optionals.getOrNull
 
 class UserService internal constructor(
-    private val repository: UserProfileJdbcRepository
+    private val repository: UserProfileJdbcRepository,
+    private val kafkaTemplate: KafkaTemplate<String, DomainEvent>
 ) {
 
     fun getUserProfile(userId: Id<UserProfile>): UserProfile {
@@ -28,6 +32,14 @@ class UserService internal constructor(
         val updated = user
             .applyPatch(patch)
         repository.save(updated.toRow())
+
+        val event = UserProfileUpdatedEvent(
+            id = updated.id.value,
+            name = updated.name,
+            email = updated.email
+        )
+        kafkaTemplate.send("user-events", event.id.toString(), event)
+
         return updated
     }
 

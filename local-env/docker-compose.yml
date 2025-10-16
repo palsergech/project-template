@@ -28,48 +28,46 @@ services:
     command:
       - 'start-dev --import-realm --health-enabled=true'
 
-  kafka:
+  kafka1:
     image: 'bitnamilegacy/kafka:4.0.0'
-    container_name: kafka
+    container_name: kafka1
     environment:
-      KAFKA_CFG_NODE_ID: 0
-      KAFKA_CFG_PROCESS_ROLES: 'broker, controller'
-      KAFKA_CLIENT_LISTENER_NAME: 'INTERNAL'
-      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: 'BROKER'
-      KAFKA_CFG_LISTENERS: 'BROKER://:9092,CONTROLLER://:9093,INTERNAL://:9094'
-      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'BROKER:PLAINTEXT,CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT'
-      KAFKA_CFG_ADVERTISED_LISTENERS: 'BROKER://kafka:9092'
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: '0@kafka:9093'
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:29092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://127.0.0.1:9092"
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    networks:
+      - local-network
+    ports:
+      - '9092:29092'
     volumes:
-      - ./kafka-data:/bitnami/kafka
+      - ./kafka1-data:/bitnami/kafka
     healthcheck:
-      test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka:9092 || exit 1" ]
+      test: [ "CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka1:9092 || exit 1" ]
       interval: 15s
       timeout: 10s
       retries: 10
       start_period: 10s
-    networks:
-      - app-network
-      - inner-cluster-communication
 
   kafka-ui:
-    image: 'kafbat/kafka-ui:latest'
+    image: 'provectuslabs/kafka-ui:latest'
     container_name: kafka-ui
     networks:
-      - inner-cluster-communication
-      - app-network
+      - local-network
     depends_on:
-      kafka:
+      kafka1:
         condition: service_healthy
     ports:
       - '10001:8080'
     environment:
       KAFKA_CLUSTERS_0_NAME: 'local'
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9094'
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka1:9092'
       DYNAMIC_CONFIG_ENABLED: 'true'
 
 networks:
-  app-network:
+  local-network:
     driver: bridge
-  inner-cluster-communication:

@@ -37,6 +37,11 @@ spring:
         jwt:
           issuer-uri: ${keycloak.public-url}
           jwk-set-uri: ${keycloak.public-url}/protocol/openid-connect/certs
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 cors:
   allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000}
@@ -71,5 +76,4 @@ management:
 info:
   app:
     build_version: ${BUILD_VERSION:undefined}
-
 

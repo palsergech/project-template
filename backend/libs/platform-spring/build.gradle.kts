@@ -8,6 +8,8 @@ dependencies {
 
     implementation(Libs.spring_boot_starter_data_jdbc)
     implementation(Libs.spring_boot_starter_security)
+    implementation(Libs.spring_kafka)
+
     implementation(Libs.postgresql)
     implementation(Libs.flyway_core)
 
