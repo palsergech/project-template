@@ -49,6 +49,8 @@ object Libs {
     const val spring_boot_starter_jdbc = "org.springframework.boot:spring-boot-starter-jdbc"
     const val spring_boot_starter_data_jdbc = "org.springframework.boot:spring-boot-starter-data-jdbc"
     const val spring_boot_starter_logging = "org.springframework.boot:spring-boot-starter-logging"
+    const val spring_retry = "org.springframework.retry:spring-retry"
+    const val spring_aspects = "org.springframework:spring-aspects"
     const val spring_boot_starter_test = "org.springframework.boot:spring-boot-starter-test"
     const val spring_boot_starter_thymeleaf = "org.springframework.boot:spring-boot-starter-thymeleaf"
     const val spring_boot_started_hateoas = "org.springframework.boot:spring-boot-starter-hateoas"

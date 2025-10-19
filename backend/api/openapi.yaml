@@ -323,29 +323,15 @@ paths:
                 $ref: '#/components/schemas/UserProfileDTO'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      operationId: updateUserProfile
-      tags: [UserProfile]
-      summary: Replace current user's profile
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateUserProfileReqDTO'
-      responses:
-        '200':
-          description: Updated user profile
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfileDTO'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       operationId: patchUserProfile
+      parameters:
+        - in: query
+          name: retry
+          schema:
+            type: boolean
+            default: false
+          description: Retry update if optimistic locking error occurred
       tags: [UserProfile]
       summary: Partially update current user's profile
       security:
@@ -363,150 +349,5 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserProfileDTO'
-        default:
-          $ref: '#/components/responses/DefaultError'
-
-  /notes:
-    get:
-      operationId: listNotes
-      tags: [Notes]
-      summary: List notes with pagination
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Page number starting at 0
-        - in: query
-          name: size
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 200
-            default: 20
-          description: Page size
-        - in: query
-          name: sort
-          schema:
-            type: string
-            example: updatedAt,DESC
-          description: Sort by field and direction
-      responses:
-        '200':
-          description: Paged list of notes
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PageOfNotesDTO'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    post:
-      operationId: createNote
-      tags: [Notes]
-      summary: Create a new note
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateNoteReqDTO'
-      responses:
-        '201':
-          description: Note created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NoteDTO'
-        default:
-          $ref: '#/components/responses/DefaultError'
-
-  /notes/{id}:
-    parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-          format: uuid
-    get:
-      operationId: getNoteById
-      tags: [Notes]
-      summary: Get note by id
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Note
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NoteDTO'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    put:
-      operationId: updateNote
-      tags: [Notes]
-      summary: Replace a note
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateNoteReqDTO'
-      responses:
-        '200':
-          description: Updated note
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NoteDTO'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    patch:
-      operationId: patchNote
-      tags: [Notes]
-      summary: Partially update a note
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchNoteReqDTO'
-      responses:
-        '200':
-          description: Updated note
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NoteDTO'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    delete:
-      operationId: deleteNote
-      tags: [Notes]
-      summary: Delete a note
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: Note deleted
-        '404':
-          $ref: '#/components/responses/NotFoundError'
         default:
           $ref: '#/components/responses/DefaultError'

@@ -6,30 +6,23 @@ import io.github.palsergech.lib.platform.domain.IdFactory
 data class UserProfile(
     val id: Id<UserProfile>,
     val name: String?,
-    val email: String?
+    val email: String?,
+    val version: Int
 ) {
     companion object: IdFactory<UserProfile> {
-        fun default(id: Id<UserProfile>) = UserProfile(
+        fun create(id: Id<UserProfile>, patch: UserProfilePatch? = null) = UserProfile(
             id = id,
-            name = null,
-            email = null
-        )
-    }
-
-    fun update(
-        name: String?,
-        email: String?
-    ): UserProfile {
-        return copy(
-            name = name,
-            email = email
+            name = patch?.name,
+            email = patch?.email,
+            version = 0
         )
     }
 
     fun applyPatch(patch: UserProfilePatch): UserProfile {
         return copy(
             name = patch.name ?: name,
-            email = patch.email ?: email
+            email = patch.email ?: email,
+            version = this.version
         )
     }
 }

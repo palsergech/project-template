@@ -25,20 +25,6 @@ class TestClient(
                 header("X-API-KEY", adminApiKey)
             }
         }
-
-        suspend fun fillCatalog(catalog: JsonNode): JsonNode {
-            return adminApiClient.expectOk("refill items catalog") {
-                post("/api/admin/catalog/items") {
-                    setBody(catalog)
-                }
-            }
-        }
-
-        suspend fun getCatalog(): JsonNode {
-            return adminApiClient.expectOk("get items catalog by admin") {
-                get("/api/admin/catalog/items")
-            }
-        }
     }
 
     inner class UserApi(
@@ -51,9 +37,31 @@ class TestClient(
             }
         }
 
-        suspend fun getCatalog(): JsonNode {
-            return userApiClient.expectOk("get items catalog by user(userId=$userId)") {
-                get("/api/catalog/items")
+        suspend fun getProfile(): JsonNode {
+            return userApiClient.expectOk("get profile(userId=$userId)") {
+                get("/profile")
+            }
+        }
+
+        suspend fun patchProfileName(name: String, retry: Boolean = false): JsonNode {
+            return userApiClient.expectOk("patch profile name(userId=$userId)") {
+                patch("/profile") {
+                    parameter("retry", retry)
+                    useAdminApiKey()
+                    contentType(ContentType.Application.Json)
+                    setBody(mapOf("name" to name))
+                }
+            }
+        }
+
+        suspend fun patchProfileEmail(email: String, retry: Boolean = false): JsonNode {
+            return userApiClient.expectOk("patch profile email(userId=$userId)") {
+                patch("/profile") {
+                    parameter("retry", retry)
+                    useAdminApiKey()
+                    contentType(ContentType.Application.Json)
+                    setBody(mapOf("email" to email))
+                }
             }
         }
     }

@@ -1,33 +1,44 @@
 package io.github.palsergech
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.scheduling.annotation.EnableScheduling
-import io.github.palsergech.security.SecurityConfiguration
-import io.github.palsergech.userprofile.UserProfileModuleConfiguration
-import io.github.palsergech.lib.spring.json.DefaultJsonMapperConfiguration
-import io.github.palsergech.lib.spring.scheduling.SchedulingConfiguration
-import io.github.palsergech.lib.spring.transaction.DefaultBlockingTransactionService
-import io.github.palsergech.rest.RestConfiguration
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.retry.annotation.EnableRetry
+import org.springframework.transaction.annotation.EnableTransactionManagement
 
-@Configuration
-@EnableAutoConfiguration(
+
+@SpringBootApplication(
     exclude = [
         RabbitAutoConfiguration::class
     ]
 )
 @EnableScheduling
+@EnableTransactionManagement
+@EnableRetry
 @Import(
-    // API beans
-    RestConfiguration::class,
-    SecurityConfiguration::class,
-    DefaultJsonMapperConfiguration::class,
-    DefaultBlockingTransactionService::class,
-    SchedulingConfiguration::class,
-
-    // modules
-    UserProfileModuleConfiguration::class
+    ApplicationConfiguration.Configuratio::class
 )
-class ApplicationConfiguration
+class ApplicationConfiguration {
+
+//
+    @Configuration
+    class Configuratio {
+
+    @Bean
+    internal fun objectMapper() = jacksonObjectMapper().apply {
+        setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        registerModule(JavaTimeModule())
+    }
+    }
+
+}

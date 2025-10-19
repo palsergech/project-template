@@ -1,6 +1,5 @@
 dependencies {
     api(project(":libs:platform"))
-    api(project(":libs:platform-spring"))
 
     api(Libs.spring_boot_starter_test)
     api(Libs.assertk)

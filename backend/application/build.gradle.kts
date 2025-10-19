@@ -8,7 +8,6 @@ plugins {
 
 dependencies {
     implementation(project(":db-migration"))
-    implementation(project(":libs:platform-spring"))
 
     implementation(Libs.springdoc_openapi_starter_webmvc_ui)
     implementation(Libs.openapitools_jackson_databind_nullable)
@@ -16,6 +15,8 @@ dependencies {
     implementation(Libs.spring_boot_starter_web)
     implementation(Libs.spring_boot_starter_amqp)
     implementation(Libs.spring_kafka)
+    implementation(Libs.spring_retry)
+    implementation(Libs.spring_aspects)
     implementation(Libs.spring_boot_starter_security)
     implementation(Libs.spring_security_oauth2_jose)
     implementation(Libs.spring_security_oauth2_resource_server)

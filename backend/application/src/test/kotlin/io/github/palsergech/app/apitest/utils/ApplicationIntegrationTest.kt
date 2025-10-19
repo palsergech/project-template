@@ -37,8 +37,6 @@ abstract class ApplicationIntegrationTest {
     private var applicationPort = 0
 
     @Autowired
-    private lateinit var transactionService: TransactionService
-    @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -78,9 +76,7 @@ abstract class ApplicationIntegrationTest {
     }
 
     fun truncateTables() {
-        transactionService.inTransaction {
-            jdbcTemplate.execute("select truncate_tables_and_sequences()")
-        }
+        jdbcTemplate.execute("select truncate_tables_and_sequences()")
     }
 
     fun withTestClient(f: suspend TestClient.() -> Unit) {

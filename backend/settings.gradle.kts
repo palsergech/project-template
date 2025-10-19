@@ -1,7 +1,6 @@
 rootProject.name = "backend"
 
 include(":libs:platform")
-include(":libs:platform-spring")
 include(":libs:spring-test")
 
 include(":modules:user-profile")

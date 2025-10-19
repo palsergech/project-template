@@ -2,7 +2,6 @@ package io.github.palsergech.rest
 
 import io.github.palsergech.rest.api.UserProfileApi
 import io.github.palsergech.rest.dto.PatchUserProfileReqDTO
-import io.github.palsergech.rest.dto.UpdateUserProfileReqDTO
 import io.github.palsergech.rest.dto.UserProfileDTO
 import io.github.palsergech.security.AuthExtractor
 import io.github.palsergech.userprofile.domain.UserProfile
@@ -22,15 +21,13 @@ class UserProfileController(
         return ResponseEntity.ok(user.toDTO())
     }
 
-    override suspend fun patchUserProfile(req: PatchUserProfileReqDTO): ResponseEntity<UserProfileDTO> {
+    override suspend fun patchUserProfile(req: PatchUserProfileReqDTO, retry: Boolean): ResponseEntity<UserProfileDTO> {
         val id = UserProfile.idFrom(AuthExtractor.getCurrentUserId())
-        val user = userService.patchUserProfile(id, req.toPatch())
-        return ResponseEntity.ok(user.toDTO())
-    }
-
-    override suspend fun updateUserProfile(updateUserProfileReqDTO: UpdateUserProfileReqDTO): ResponseEntity<UserProfileDTO> {
-        val id = UserProfile.idFrom(AuthExtractor.getCurrentUserId())
-        val user = userService.updateUserProfile(id, updateUserProfileReqDTO.name, updateUserProfileReqDTO.email)
+        val user = if (retry) {
+            userService.patchUserProfileWithRetry(id, req.toPatch())
+        } else {
+            userService.patchUserProfile(id, req.toPatch())
+        }
         return ResponseEntity.ok(user.toDTO())
     }
 
