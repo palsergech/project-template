@@ -1,15 +1,15 @@
 ### health
 GET {{backend-url}}/api/system/health
 ### liveness probe
-GET {{backend-url}}/system/health/liveness
+GET {{backend-url}}/api/system/health/liveness
 ### readiness probe
-GET {{backend-url}}/system/health/readiness
+GET {{backend-url}}/api/system/health/readiness
 ### prometheus metrica
-GET {{backend-url}}/system/prometheus
+GET {{backend-url}}/api/system/prometheus
 ### system info
-GET {{backend-url}}/system/info
+GET {{backend-url}}/api/system/info
 ### open-api docs
-GET {{backend-url}}/system/docs
+GET {{backend-url}}/api/system/docs
 ### Swagger UI
 GET {{backend-url}}/system/swagger-ui
 ### Swagger UI

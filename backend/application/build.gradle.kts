@@ -13,10 +13,16 @@ dependencies {
     implementation(Libs.openapitools_jackson_databind_nullable)
 
     implementation(Libs.spring_boot_starter_web)
+
+    implementation(Libs.spring_boot_starter_actuator)
+    implementation(Libs.micrometer_registry_prometheus)
+
     implementation(Libs.spring_boot_starter_amqp)
     implementation(Libs.spring_kafka)
-    implementation(Libs.spring_retry)
+
     implementation(Libs.spring_aspects)
+    implementation(Libs.spring_retry)
+
     implementation(Libs.spring_boot_starter_security)
     implementation(Libs.spring_security_oauth2_jose)
     implementation(Libs.spring_security_oauth2_resource_server)

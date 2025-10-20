@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 
 @SpringBootApplication(
@@ -24,21 +26,29 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 @EnableTransactionManagement
 @EnableRetry
 @Import(
-    ApplicationConfiguration.Configuratio::class
+    ApplicationConfiguration.SerializationConfig::class,
+    ApplicationConfiguration.OpenApiResourceLoader::class
 )
 class ApplicationConfiguration {
 
-//
     @Configuration
-    class Configuratio {
+    class SerializationConfig {
 
-    @Bean
-    internal fun objectMapper() = jacksonObjectMapper().apply {
-        setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        registerModule(JavaTimeModule())
+        @Bean
+        internal fun objectMapper() = jacksonObjectMapper().apply {
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            registerModule(JavaTimeModule())
+        }
     }
+
+    @Configuration
+    class OpenApiResourceLoader : WebMvcConfigurer {
+        override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+            registry.addResourceHandler("/openapi.yaml")
+                .addResourceLocations("classpath:/openapi.yaml")
+        }
     }
 
 }

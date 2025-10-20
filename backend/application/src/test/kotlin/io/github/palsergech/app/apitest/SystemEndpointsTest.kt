@@ -18,14 +18,14 @@ class SystemEndpointsTest: ApplicationIntegrationTest() {
     }
 
     @Test
-    @Disabled
     fun metrics() = runBlocking {
-        val res = httpClient.get("api/system/prometheus")
+        val res = httpClient.get("api/system/prometheus") {
+            header("Accept", "text/plain")
+        }
         assertThat(res.status).isEqualTo(HttpStatusCode.OK)
     }
 
     @Test
-    @Disabled
     fun openapi() = runBlocking {
         val res = httpClient.get("openapi.yaml")
         assertThat(res.status).isEqualTo(HttpStatusCode.OK)

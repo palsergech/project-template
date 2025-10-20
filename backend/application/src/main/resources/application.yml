@@ -38,7 +38,7 @@ spring:
           issuer-uri: ${keycloak.public-url}
           jwk-set-uri: ${keycloak.public-url}/protocol/openid-connect/certs
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -56,7 +56,7 @@ springdoc:
   swagger-ui:
     path: ${management.endpoints.web.base-path}/swagger-ui
     urls:
-      - url: ${server.servlet.context-path}openapi/specification.yaml
+      - url: ${server.servlet.context-path}openapi.yaml
         name: API
 
 management:
@@ -69,10 +69,16 @@ management:
     env:
       enabled: true
   endpoint:
+    prometheus:
+      enabled: true
     health:
       probes:
         enabled: true
       show-components: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 info:
   app:
     build_version: ${BUILD_VERSION:undefined}
