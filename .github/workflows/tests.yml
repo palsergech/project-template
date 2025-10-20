@@ -7,13 +7,14 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+
   gradle-test:
-
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
-
+    defaults:
+      run:
+        working-directory: ./backend
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
@@ -23,9 +24,7 @@ jobs:
           distribution: 'adopt'
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-        working-directory: ./backend
         with:
           gradle-version: 8.6
       - name: Run test suite
-        working-directory: ./backend
         run: gradle test
