@@ -11,7 +11,7 @@ GET {{backend-url}}/api/system/info
 ### open-api docs
 GET {{backend-url}}/api/system/docs
 ### Swagger UI
-GET {{backend-url}}/system/swagger-ui
+GET {{backend-url}}/api/system/swagger-ui
 ### Swagger UI
 GET {{backend-url}}/openapi.yaml
 

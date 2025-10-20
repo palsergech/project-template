@@ -39,13 +39,13 @@ class TestClient(
 
         suspend fun getProfile(): JsonNode {
             return userApiClient.expectOk("get profile(userId=$userId)") {
-                get("/profile")
+                get("/api/profile")
             }
         }
 
         suspend fun patchProfileName(name: String, retry: Boolean = false): JsonNode {
             return userApiClient.expectOk("patch profile name(userId=$userId)") {
-                patch("/profile") {
+                patch("/api/profile") {
                     parameter("retry", retry)
                     useAdminApiKey()
                     contentType(ContentType.Application.Json)
@@ -56,7 +56,7 @@ class TestClient(
 
         suspend fun patchProfileEmail(email: String, retry: Boolean = false): JsonNode {
             return userApiClient.expectOk("patch profile email(userId=$userId)") {
-                patch("/profile") {
+                patch("/api/profile") {
                     parameter("retry", retry)
                     useAdminApiKey()
                     contentType(ContentType.Application.Json)
