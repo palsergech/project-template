@@ -1,5 +1,5 @@
 ### get token from keycloak
-POST http://localhost:9090/realms/template/protocol/openid-connect/token
+POST {{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&username={{user_username}}&password={{user_password}}&client_id={{keycloak_client_id}}&client_secret={{keycloak_client_secret}}
@@ -9,11 +9,11 @@ grant_type=password&username={{user_username}}&password={{user_password}}&client
 %}
 
 ###
-GET http://localhost:8080/profile
+GET {{backend-url}}/api/profile
 Authorization: Bearer {{access_token}}
 
 ###
-PATCH http://localhost:8080/profile
+PATCH {{backend-url}}/api/profile
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:8080/profile
+PUT {{backend-url}}/api/profile
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 

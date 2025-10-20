@@ -1,5 +1,5 @@
 ### health
-GET {{backend-url}}/greeting
+GET {{backend-url}}/api/greeting
 x-api-key: {{admin-api-key}}
 
 
