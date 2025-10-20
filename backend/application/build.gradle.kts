@@ -27,6 +27,9 @@ dependencies {
     implementation(Libs.spring_security_oauth2_jose)
     implementation(Libs.spring_security_oauth2_resource_server)
 
+    implementation(Libs.spring_boot_starter_jdbc)
+    implementation(Libs.flyway_core)
+
     implementation(project(":modules:user-profile"))
     implementation(project(":modules:notes"))
 
