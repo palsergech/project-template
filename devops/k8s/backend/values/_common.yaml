@@ -44,6 +44,8 @@ envVars:
     value: '{{ requiredEnv "BUILD_VERSION" }}'
   - name: KC_PUBLIC_URL
     value: '{{ requiredEnv "KC_PUBLIC_URL" }}'
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    value: 'kafka-{{ requiredEnv "ENV_NAME" }}.kafka-{{ requiredEnv "ENV_NAME" }}.svc.cluster.local:9092'
 
 envSecretVars:
   API_KEY: '{{ requiredEnv "API_KEY" }}'
