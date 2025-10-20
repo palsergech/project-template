@@ -31,7 +31,7 @@ dependencies {
     implementation(Libs.flyway_core)
 
     implementation(project(":modules:user-profile"))
-    implementation(project(":modules:notes"))
+    implementation(project(":modules:notifications"))
 
     testImplementation(project(":db-migration"))
     testImplementation(project(":libs:spring-test"))
