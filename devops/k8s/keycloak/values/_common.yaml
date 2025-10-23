@@ -28,17 +28,10 @@ externalDatabase:
 metrics:
   enabled: true
   service:
-    type: ClusterIP
     ports:
-      - name: metrics
-        port: 9000
-        targetPort: 9000
+      metrics: 9000
     annotations:
       prometheus.io/scrape: "true"
-      prometheus.io/path: "/metrics"
-      prometheus.io/port: "9000"
+      prometheus.io/port: "9000"   # use hard-coded port to avoid `tpl` evaluation
   serviceMonitor:
     enabled: true
-    namespace: monitoring
-    interval: 15s
-    scrapeTimeout: 10s
