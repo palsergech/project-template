@@ -12,8 +12,12 @@ ingress:
   tls: true
 
 extraEnvVars:
-  - name: KEYCLOAK_LOG_LEVEL
+  - name: KC_LOG_LEVEL
     value: DEBUG
+  - name: KC_HTTP_METRICS_SLOS
+    value: "true"
+  - name: KC_HTTP_METRICS_HISTOGRAMS_ENABLED
+    value: "true"
 
 replicaCount: 1
 
