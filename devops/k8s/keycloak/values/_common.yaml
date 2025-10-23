@@ -24,3 +24,8 @@ externalDatabase:
   user: '[[ requiredEnv "KC_DB_USER" ]]'
   database: '[[ requiredEnv "KC_DB_NAME" ]]'
   password: '[[ requiredEnv "KC_DB_PASS" ]]'
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
