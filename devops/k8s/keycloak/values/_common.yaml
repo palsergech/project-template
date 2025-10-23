@@ -27,15 +27,5 @@ externalDatabase:
 
 metrics:
   enabled: true
-  service:
-    type: ClusterIP
-    ports:
-      - name: metrics
-        port: 9000
-        targetPort: 9000
-    annotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/path: "/metrics"
-      prometheus.io/port: "9000"
   serviceMonitor:
     enabled: true
