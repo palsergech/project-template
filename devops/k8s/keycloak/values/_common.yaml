@@ -27,8 +27,7 @@ externalDatabase:
 
 metrics:
   enabled: true
+  service:
+    ports: 9000
   serviceMonitor:
     enabled: true
-  service:
-    port: 8080
-    type: ClusterIP
