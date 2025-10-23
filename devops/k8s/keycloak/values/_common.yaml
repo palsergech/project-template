@@ -28,6 +28,10 @@ externalDatabase:
 metrics:
   enabled: true
   service:
-    ports: 9000
+    ports:
+      - name: metrics
+        port: 9000
+        targetPort: 9000
+    type: ClusterIP
   serviceMonitor:
     enabled: true
