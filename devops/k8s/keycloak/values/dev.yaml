@@ -11,13 +11,11 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   tls: true
 
-extraEnvVars:
-  - name: KC_LOG_LEVEL
-    value: DEBUG
+configu:
   - name: KC_HTTP_METRICS_SLOS
-    value: "true"
+    value: 1
   - name: KC_HTTP_METRICS_HISTOGRAMS_ENABLED
-    value: "true"
+    value: 1
 
 replicaCount: 1
 
