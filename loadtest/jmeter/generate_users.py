@@ -86,9 +86,8 @@ def generate_and_create(count: int, prefix: str, out_path: Path,
             writer.writerow([username, password])
 
             # можно чуть "замедлить" при массовом создании
-            if i % 100 == 0:
+            if i % 10 == 0:
                 print(f"Создано пользователей: {i - start + 1}/{count}")
-                sleep(0.1)
 
     print(f"\n✅ Готово: {created} создано, {skipped} пропущено. CSV: {out_path}")
     return 0
